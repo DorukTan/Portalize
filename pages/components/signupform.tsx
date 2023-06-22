@@ -5,85 +5,100 @@ import {
     Button,
     Typography,
   } from "@material-tailwind/react";
-
-
+  import axios from "axios";
+  import Router from "next/router";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
+import { Formik } from "formik";
 
 
 
    
   const SignUpform = () => {
 
-    const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
-
-  
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-        //Getting value from useRef()
-        const name = formValues.name;
-        const email = formValues.email;
-        const password = formValues.password;
-        //Validation
-        if (!email || !email.includes('@') || !password) {
-            alert('Invalid details');
-            return;
+    
+      const [authType, setAuthType] = useState("Login");
+      const oppAuthType: { [key: string]: string } = {
+        Login: "Register",
+        Register: "Login",
+      };
+      const [username, setUsername] = useState("");
+      const [email, setEmail] = useState("");
+      const [password, setPassword] = useState("");
+    
+      const redirectToHome = () => {
+        const { pathname } = Router;
+        if (pathname === "/auth") {
+          // TODO: redirect to a success register page
+          Router.push("/");
         }
-        //POST form values
-        const res = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password,
-            }),
+      };
+    
+      const registerUser = async () => {
+        const res = await axios
+          .post(
+            "/api/register",
+            { username, email, password },
+            {
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then(async () => {
+            await loginUser();
+            redirectToHome();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        console.log(res);
+      };
+    
+      const loginUser = async () => {
+        const res: any = await signIn("credentials", {
+          redirect: false,
+          email: email,
+          password: password,
+          callbackUrl: `${window.location.origin}`,
         });
-        //Await for data for any desirable next steps
-        const data = await res.json();
-        console.log(data);
-
-  };
-  
-  
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-
+    
+        res.error ? console.log(res.error) : redirectToHome();
+      };
+    
+      const formSubmit = (actions: any) => {
+        actions.setSubmitting(false);
+    
+        authType === "Login" ? loginUser() : registerUser();
+      };
 
 
 
     return (
       <Card color="transparent" shadow={false}>
-        <form className="mt-8 mb-2 w-[100%] max-w-screen-lg min-w-0 sm:w-[100%]">
+        <form
+        className="mt-8 mb-2 w-[100%] max-w-screen-lg min-w-0 sm:w-[100%]"
+        onSubmit={(_, actions) => {
+          formSubmit(actions);
+        }}>
           <div className="mb-1 flex flex-col gap-2">
             <Input
             color="purple"
             size="lg" 
             className="!border-0 !bg-inputBg !ring-0"
-            label="Name"
-            type="text"
-            onChange={handleChange}
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             />
             <Input
             color="purple"
             size="lg"
             className="!border-0 !bg-inputBg  !ring-0" 
             label="Email" 
-            type="email"
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             />
             <Input
             color="purple"
@@ -91,7 +106,8 @@ import { ChangeEvent, useState } from "react";
             className="!border-0 !bg-inputBg !ring-0"
             label="Password"
             type="password"
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <Checkbox
@@ -114,7 +130,7 @@ import { ChangeEvent, useState } from "react";
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-2" color="purple" onClick={onSubmit} fullWidth>
+          <Button className="mt-2" color="purple" fullWidth type="submit">
             Register
           </Button>
           <Typography color="white" className="mt-2 text-center font-normal">
@@ -131,22 +147,4 @@ import { ChangeEvent, useState } from "react";
     );
   }
 
-  export const SignInform = () => {
-    return (
-      <Card color="transparent" shadow={false}>
-        <form className="mt-8 mb-2 w-[100%] max-w-screen-lg min-w-0 sm:w-[100%]">
-          <div className="mb-1 flex flex-col gap-2">
-            <Input color="purple" size="lg" className="!border-0 !bg-inputBg" label="Name" />
-            <Input color="purple" size="lg" className="!border-0 !bg-inputBg" label="Email" />
-            <Input color="purple" type="password" size="lg" className="!border-0 !bg-inputBg" label="Password" />
-          </div>
-          
-          <Button className="mt-2" color="purple" fullWidth>
-            SIGN IN
-          </Button>
-        </form>
-      </Card>
-    );
-  }
-
-  export default SignUpform
+export default SignUpform

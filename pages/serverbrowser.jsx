@@ -21,7 +21,6 @@ const PortalizeSB = () => {
               <h2 className='relative text-5xl left-14 w-18 mb-7'>Featured Games</h2>
               <FeaturedSlider/>
             </div>
-            
         </main>
     </Fragment>
   )

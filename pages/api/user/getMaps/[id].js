@@ -9,7 +9,7 @@ export default async function run(req, res) {
     const database = client.db("test");
     const movies = database.collection("users");
     // Query for a movie that has the title 'The Room'
-    const query = {_id:new ObjectId(`${id}`),};
+    const query = {};
     const options = {
       // sort matched documents in descending order by rating
     //   sort: { "imdb.rating": -1 }, 

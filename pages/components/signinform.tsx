@@ -6,19 +6,25 @@ import {
     Typography,
     IconButton
   } from "@material-tailwind/react";
-  import { getCsrfToken, signIn, signOut } from "next-auth/react"
+  import { signIn, signOut,getProviders } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import {FaApple, FaTwitter, FaGithub} from "react-icons/fa"
 import Link from "next/link";
+import { useState } from "react";
+import type { NextPage } from "next";
+import axios from "axios";
+import Router from "next/router";
    
 
 
-  const SignInform = ({csrfToken}) => {
+  const SignInform = ({}) => {
+
+    
+
     return (
       <Card color="transparent" shadow={false}>
         <form method="post" action="/api/auth/callback/credentials" className="mt-8 mb-2 w-[100%] max-w-screen-lg min-w-0 sm:w-[100%]">
           <div className="mb-1 flex flex-col gap-2">
-            <input name="csrfToken" type="hidden" defaultValue={csrfToken}/>
             <Input color="purple" type='email' size="lg" className="!border-0 !bg-inputBg  !ring-0" label="Email" />
             <Input color="purple" type="password" size="lg" className="!border-0 !bg-inputBg  !ring-0" label="Password" />
             
@@ -58,15 +64,7 @@ import Link from "next/link";
         </form>
       </Card>
     );
-  }
-
-
-  export async function getServerSideProps(context) {
-    return {
-      props: {
-        csrfToken: await getCsrfToken(context),
-      },
     }
-  }
+  
 
   export default SignInform

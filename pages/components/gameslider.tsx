@@ -5,8 +5,10 @@ import { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import { items } from './data';
 
 type Repo = {
-  name: string
-  stargazers_count: number
+  _id: object,
+  title: string,
+  owner: string,
+  desc: string
 }
 
 export const getServerSideProps: GetServerSideProps<{

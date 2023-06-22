@@ -1,20 +1,21 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+import mongoose from "mongoose";
 
-const UserSchema = new Schema({
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
     id:{type:String},
-    name:{type:String,},
-    email:{type:String,},
-    pass:{type:password,},
+    name:{type:String,required:true,unique:true},
+    email:{type:String,required:true,unique:true},
+    hashedPassword:{type:String,required:true,minLength:5},
     image:{type:String,},
-    worlds:{
+    maps:{
         owned:{type:Array},
         liked:{type:Array},
     },
-    created:{type:Date.now},
+    created:{type: Date, default: Date.now},
     banned:{type:Boolean},
     gtime:{type:Number},
 })
 
-const UserModel = mongoose.model("user", UserSchema)
-module.exports = UserModel
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User;

@@ -23,7 +23,7 @@ const FeaturedSlider = () => {
         ]
       )
 
-    const games = items.map(game => <div className="keen-slider__slide" key={game.id}><GameCard title={game.title} desc={game.description}/></div>)
+    const games = items.map(game => <div className="keen-slider__slide" key={game.id}><GameCard bg={game.url} title={game.title} desc={game.description}/></div>)
     
   return (
     <div ref={sliderRef} className="keen-slider overflow-x-hidden p-[32px]">

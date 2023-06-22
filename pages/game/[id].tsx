@@ -6,6 +6,7 @@ import UnityInstance from "react-unity-webgl/declarations/unity-instance";
 import {
   Input
 } from "@material-tailwind/react";
+import fetch from 'node-fetch'
 
 
 
@@ -15,18 +16,15 @@ export const getServerSideProps = async(req) => {
   const [floormapRes, interiorRes] = await Promise.all([fetch(`http://localhost:3000/api/worlds/floormap/${id}`), fetch(`http://localhost:3000/api/worlds/interior/${id}`)]);
   const [floormap, interior] = await Promise.all([floormapRes.json(), interiorRes.json()])
   const [floormapdata, interiordata] = await Promise.all([JSON.stringify(floormap),JSON.stringify(interior)])
+  const data = [floormapdata, interiordata]
   return{
     
-    props:{floormapdata, interiordata}
+    props:{data}
     
   };
   
 }
-
-
-
-
-function App({floormapdata, interiordata}) {
+function App({data}) {
   const[unityNumber, setUnityNumber] = useState(0);
   const[unityString, setUnityString] = useState('text');
  
@@ -36,6 +34,11 @@ function App({floormapdata, interiordata}) {
     frameworkUrl: "/build/webgl-api-test.framework.js.unityweb",
     codeUrl: "/build/webgl-api-test.wasm.unityweb",
   });
+
+  if(isLoaded === true){
+    console.log(data)
+    sendMessage('JavascriptHook','SetString', `${data}`)
+  }
   
   return (
     <Fragment>
@@ -56,8 +59,8 @@ function App({floormapdata, interiordata}) {
       <Button onClick={() => sendMessage('JavascriptHook','TintGreen')}>Green</Button>
       <Button onClick={() => sendMessage('JavascriptHook', 'SetNumber', unityNumber)}>number</Button>
       <Button onClick={() => sendMessage('JavascriptHook','SetString', unityString)}>text</Button>
-      <Button onClick={() => sendMessage('JavascriptHook','SetString', floormapdata)}>floormapdata</Button>
-      <Button onClick={() => sendMessage('JavascriptHook','SetString', interiordata)}>interiordata</Button>
+      {/* <Button onClick={() => sendMessage('JavascriptHook','SetString', floormapdata)}>floormapdata</Button>
+      <Button onClick={() => sendMessage('JavascriptHook','SetString', interiordata)}>interiordata</Button> */}
     </ButtonGroup>
     </Fragment>
   );
